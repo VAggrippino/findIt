@@ -1,0 +1,19 @@
+{
+  "name": "findit",
+  "version": "1.0.0",
+  "description": "Search the Web, Books, Movies, or Products",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VAggrippino/findIt.git"
+  },
+  "author": "Vince Aggrippino",
+  "license": "Unlicense",
+  "bugs": {
+    "url": "https://github.com/VAggrippino/findIt/issues"
+  },
+  "homepage": "https://github.com/VAggrippino/findIt#readme"
+}
