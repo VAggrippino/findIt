@@ -18,7 +18,8 @@
   "homepage": "https://github.com/VAggrippino/findIt#readme",
   "dependencies": {
     "dotenv": "^5.0.1",
-    "express": "^4.16.3"
+    "express": "^4.16.3",
+    "mongodb": "^3.0.5"
   },
   "devDependencies": {
     "eslint": "^4.19.1",
