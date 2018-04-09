@@ -19,7 +19,8 @@
   "dependencies": {
     "dotenv": "^5.0.1",
     "express": "^4.16.3",
-    "mongodb": "^3.0.5"
+    "mongodb": "^3.0.5",
+    "pug": "^2.0.3"
   },
   "devDependencies": {
     "eslint": "^4.19.1",
