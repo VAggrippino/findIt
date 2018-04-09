@@ -1,7 +1,10 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat:800i');
 
+body.index .title {
+  font-size: 4rem;
+}
+
 .title {
-  font-size: 4em;
   font-weight: 800;
   font-style: italic;
   font-family: 'Montserrat', sans-serif;
@@ -17,4 +20,12 @@
 
 #searchForm #searchTypes .col {
   flex-grow: 0;
+}
+
+#query {
+  flex: 1
+}
+
+#titleLink:hover {
+  text-decoration: none;
 }

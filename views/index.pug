@@ -8,7 +8,7 @@ html(lang='en')
     link(rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' integrity='sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm' crossorigin='anonymous')
     link(rel='stylesheet' href='main.css')
 
-  body
+  body.index
     .container
       .row.justify-content-center
         h1.title
@@ -21,7 +21,7 @@ html(lang='en')
           span t
           span !
 
-      form#searchForm.form(action='' method='get')
+      form#searchForm.form(action='/search' method='get')
         #searchTypes.row.justify-content-center
           .col.form-check.form-check-inline
             input#searchTypeWeb.form-check-input(checked value='web' name='searchType' type='radio')
@@ -41,7 +41,7 @@ html(lang='en')
 
         .row.align-items-start
           .form-group.col-11
-            input.form-control(type='text' name='query')
+            input#query.form-control(type='text' name='query')
 
           button.btn.btn-primary.col-1(type="submit") Go!
 
