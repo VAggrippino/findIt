@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/VAggrippino/findIt/issues"
   },
-  "homepage": "https://github.com/VAggrippino/findIt#readme"
+  "homepage": "https://github.com/VAggrippino/findIt#readme",
+  "dependencies": {
+    "dotenv": "^5.0.1",
+    "express": "^4.16.3"
+  }
 }
