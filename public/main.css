@@ -22,6 +22,10 @@ body.index .title {
   flex-grow: 0;
 }
 
+#searchForm button[type="submit"] {
+  min-width: 3em;
+}
+
 #query {
   flex: 1
 }
