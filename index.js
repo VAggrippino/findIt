@@ -38,7 +38,6 @@ async function newQuery (req, res) {
       break
   }
 
-  }
   let data = {
     searchType: req.query.searchType,
     query: req.query.query,
