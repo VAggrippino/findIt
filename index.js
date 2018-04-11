@@ -19,6 +19,26 @@ app.listen(port, () => {
 })
 
 async function newQuery (req, res) {
+  let poweredBy
+  switch (req.query.searchType) {
+    case 'web':
+      poweredBy = 'Google Custom Search'
+      break
+    case 'images':
+      poweredBy = 'Bing Web Search API'
+      break
+    case 'books':
+      poweredBy = 'Amazon'
+      break
+    case 'Movies':
+      poweredBy = 'Open Movie Database'
+      break
+    case 'Products':
+      poweredBy = 'Amazon'
+      break
+  }
+
+  }
   let data = {
     searchType: req.query.searchType,
     query: req.query.query,
@@ -45,6 +65,10 @@ function cseSearch (req) {
       start: start
     },
     json: true
+  }
+
+  if (searchType === 'images') {
+    options.qs.searchType = 'image'
   }
 
   return rp(options)

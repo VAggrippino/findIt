@@ -55,6 +55,8 @@ html(lang='en')
         .row
           small.text-muted.
             I found about #{results.resultCount} results in #{results.searchTime} seconds.
+            #[br]
+            Find It! #{searchType} search is powered by #{poweredBy}.
 
         each item in results.items
           .row.flex-column
