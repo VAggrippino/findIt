@@ -1,0 +1,74 @@
+if results.resultCount == 0
+  div.jumbotron.my-4
+    h1.display-4 No Results Found
+    p.lead.
+      Your search - #[span.font-weight-bold= query] - did not match any
+      documents.
+
+    p.lead Suggestions:
+
+    ul
+      li Make sure that all words are spelled correctly.
+      li Try different keywords.
+      li Try more general keywords.
+      li Try fewer keywords.
+else
+  .row
+    small.text-muted.mb-2.
+      I found about #{results.resultCount} results in #{results.searchTime} seconds.
+      &mdash;
+      Find It! #{searchType} search is powered by #{poweredBy}.
+
+  each item in results.items
+    .row.flex-column
+      a(href=item.link) !{item.htmlTitle}
+      small.text-info= item.displayLink
+      p !{item.htmlSnippet}
+
+  if results.pages > 1
+    - let queryParts = {searchType: searchType, query: encodeURI(query)}
+    - let getQueryString = page => {
+    -   queryParts.page = +page;
+    -   return '?' + Object.entries(queryParts).map(part => part.join('=')).join('&')
+    - }
+    - let queryString = getQueryString(1)
+
+    - let n
+    if +page > 3
+      - n = +page - 2
+    else
+      - n = 1
+
+    - let lastN = +page + 2
+    if lastN > results.pages
+      - lastN = results.pages
+
+    if lastN < 5
+      if results.pages > 5
+        - lastN = 5
+      else
+        - lastN = results.pages
+
+    .row.justify-content-center
+      nav(aria-label='Search results pages')
+        ul.pagination
+          li.page-item(class=(page === 1 ? 'disabled' : ''))
+            - queryParts.page = page - 1
+            - queryString = getQueryString(n)
+            a.page-link(href=queryString aria-label='Previous') Previous
+
+          while n <= lastN
+            - queryParts.page = n
+            - queryString = getQueryString(n)
+            //- n is a number, but page is a string because it's from the query string
+            li.page-item(class=(n == page ? 'disabled font-weight-bold' : ''))
+              a.page-link(href=queryString)= n++
+
+          if results.pages > lastN
+            li.page-item.disabled
+              a.page-link ...
+
+          li.page-item(class=(page == results.pages ? 'disabled' : ''))
+            - let nextPage = page + 1
+            - queryString = getQueryString(nextPage)
+            a.page-link(href=queryString aria-label='Next') Next

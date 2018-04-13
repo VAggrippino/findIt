@@ -1,0 +1,29 @@
+doctype html
+html(lang='en')
+  include includes/pageTop.pug
+
+  body
+    .container
+      .row
+        include includes/title.pug
+
+        form#searchForm.form-inline.col(action='/search' method='get')
+          input(name='searchType' value=searchType type='hidden')
+          input#query.form-control.mr-2(type='text' name='query' value=query)
+          button.btn.btn-primary.col-1(type="submit") Go!
+
+      .row.mb-2
+        ul.nav.nav-pills
+          each link in ['Web', 'Images', 'Books', 'Movies', 'Products']
+            - let lcLink = link.toLowerCase()
+            - let classes = ['nav-link']
+            if results && results.searchType === lcLink
+              - classes.push('active')
+
+            li.nav-item
+              a(class=classes href=`?searchType=${lcLink}&query=${encodeURI(query)}`)= link
+
+      if searchType && results && searchType === 'web'
+        include includes/webResults.pug
+
+    include includes/pageBottom.pug
