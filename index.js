@@ -40,6 +40,7 @@ async function newQuery (req, res) {
 
   let data = {
     searchType: req.query.searchType,
+    poweredBy: poweredBy,
     query: req.query.query,
     page: +req.query.page || 1,
     results: await cseSearch(req)
