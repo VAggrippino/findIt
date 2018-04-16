@@ -1,3 +1,4 @@
+'use strict'
 require('dotenv').config()
 const express = require('express')
 const rp = require('request-promise-native')
@@ -20,12 +21,15 @@ app.listen(port, () => {
 
 async function newQuery (req, res) {
   let poweredBy
+  let results
   switch (req.query.searchType) {
     case 'web':
       poweredBy = 'Google Custom Search'
+      results = await cseSearch(req)
       break
     case 'images':
       poweredBy = 'Bing Web Search API'
+      results = await bingImageSearch(req)
       break
     case 'books':
       poweredBy = 'Amazon'
@@ -43,9 +47,9 @@ async function newQuery (req, res) {
     poweredBy: poweredBy,
     query: req.query.query,
     page: +req.query.page || 1,
-    results: await cseSearch(req)
+    results: results
   }
-  res.render('search', data)
+  res.render('results', data)
 }
 
 function cseSearch (req) {
@@ -57,9 +61,9 @@ function cseSearch (req) {
   let options = {
     uri: 'https://www.googleapis.com/customsearch/v1/',
     qs: {
-      q: req.query.query,
+      q: encodeURIComponent(req.query.query),
       cx: cseId,
-      key: process.env.API_KEY,
+      key: process.env.CSE_API_KEY,
       num: 10,
       safe: 'high',
       start: start
@@ -67,14 +71,8 @@ function cseSearch (req) {
     json: true
   }
 
-  if (searchType === 'images') {
-    options.qs.searchType = 'image'
-  }
-
   return rp(options)
     .then(results => {
-      console.log(results.searchInformation)
-      console.log(results)
       let pages = Math.floor(results.searchInformation.totalResults / 10) + 1
       let data = {
         searchType: req.query.searchType,
@@ -83,11 +81,50 @@ function cseSearch (req) {
         items: results.items,
         pages: pages
       }
-      console.log(`pages: ${pages}`)
       return data
     })
     .catch(error => {
       console.log(error)
       return error
+    })
+}
+
+function bingImageSearch (req) {
+  let host = 'api.cognitive.microsoft.com'
+  let path = '/bing/v7.0/images/search'
+
+  let options = {
+    uri: 'https://' + host + path,
+    headers: {
+      'Ocp-Apim-Subscription-Key': process.env.BING_API_KEY
+    },
+    qs: {
+      q: encodeURIComponent(req.query.query),
+      count: 25
+    }
+  }
+
+  return rp(options)
+    .then(results => {
+      let obj = JSON.parse(results)
+      console.log(JSON.stringify(obj.value, null, 2))
+
+      let data = {
+        searchType: req.query.searchType,
+        resultCount: obj.value.length,
+        items: obj.value
+      }
+
+      return data
+    })
+    .catch(error => {
+      console.log('-----')
+      console.log('Request Failed:')
+
+      Object.entries(JSON.parse(error.error)).map(part => {
+        console.log(part[0], part[1])
+      })
+
+      console.log('=====')
     })
 }

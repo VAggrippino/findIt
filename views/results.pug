@@ -23,7 +23,10 @@ html(lang='en')
             li.nav-item
               a(class=classes href=`?searchType=${lcLink}&query=${encodeURI(query)}`)= link
 
-      if searchType && results && searchType === 'web'
-        include includes/webResults.pug
+      if searchType && results
+        if searchType === 'web'
+          include includes/webResults.pug
+        else if searchType === 'images'
+          include includes/imageResults.pug
 
     include includes/pageBottom.pug

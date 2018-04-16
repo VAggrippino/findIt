@@ -1,13 +1,13 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat:800i');
 
-body.index .title {
-  font-size: 4rem;
-}
-
 .title {
   font-weight: 800;
   font-style: italic;
   font-family: 'Montserrat', sans-serif;
+}
+
+body.index .title {
+  font-size: 4rem;
 }
 
 .title span:nth-child(1) { color: red; }
@@ -27,9 +27,59 @@ body.index .title {
 }
 
 #query {
-  flex: 1
+  flex: 1;
 }
 
 #titleLink:hover {
   text-decoration: none;
+}
+
+.image a {
+  --caption-height: 2em;
+
+  display: inline-block;
+  height: 8rem;
+  position: relative;
+}
+
+.image a::before,
+.image a::after {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  font-size: 0.75rem;
+  max-height: 0;
+  height: var(--caption-height);
+  line-height: var(--caption-height);
+  overflow: hidden;
+  position: absolute;
+  bottom: 0;
+  color: white;
+  transition: max-height 0.25s;
+  box-sizing: border-box;
+  padding: 0 0.25em;
+  background: linear-gradient(to top, black, transparent);
+}
+
+.image a::before {
+  content: attr(data-size);
+  left: 0;
+  width: 5em;
+}
+
+.image a::after {
+  content: attr(data-domain);
+  text-align: right;
+  width: calc(100% - 5em);
+  left: 5em;
+}
+
+.image a:hover::before,
+.image a:hover::after {
+  max-height: var(--caption-height);
+}
+
+.image img {
+  max-height: 100%;
+  width: auto;
 }

@@ -1,0 +1,12 @@
+if results.resultCount == 0
+  include noResults.pug
+else
+  .row.justify-content-between
+    each item in results.items
+      - let imageDomain = item.hostPageUrl.match(/^https?:\/\/(?:www\.)?([^\/]+).*$/)[1]
+      - let imageSize = `${item.width}x${item.height}`
+      .image.mr-2
+        a(href=item.contentUrl data-domain=imageDomain data-size=imageSize)
+          img(alt=item.name src=item.thumbnailUrl).rounded.d-block.mx-auto
+          // figcaption.figcaption
+          //   p= item.name
