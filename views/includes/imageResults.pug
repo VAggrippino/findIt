@@ -1,12 +1,33 @@
+mixin image(item)
+  - let imageDomain = item.hostPageUrl.match(/^https?:\/\/(?:www\.)?([^\/]+).*$/)[1]
+  - let imageSize = `${item.width}x${item.height}`
+  .image.result.d-flex.align-items-center.col.mb-1(
+    data-content-url=item.contentUrl
+    data-thumbnail-url=item.thumbnailUrl
+    data-name=item.name
+    data-format=item.encodingFormat
+    data-size=item.contentSize
+    data-width=item.width
+    data-height=item.height
+    data-published=item.datePublished
+    data-host-page=item.hostPageUrl
+  )
+    a(href=item.contentUrl data-domain=imageDomain data-size=imageSize)
+      img.rounded.d-block(alt=item.name src=item.thumbnailUrl)
+
 if results.resultCount == 0
   include noResults.pug
 else
-  .row.justify-content-between
-    each item in results.items
-      - let imageDomain = item.hostPageUrl.match(/^https?:\/\/(?:www\.)?([^\/]+).*$/)[1]
-      - let imageSize = `${item.width}x${item.height}`
-      .image.mr-2
-        a(href=item.contentUrl data-domain=imageDomain data-size=imageSize)
-          img(alt=item.name src=item.thumbnailUrl).rounded.d-block.mx-auto
-          // figcaption.figcaption
-          //   p= item.name
+  -
+    let i = 0
+    rows = results.items.reduce((accumulator, currentValue, currentIndex) => {
+      if (currentIndex > 0 && currentIndex % 5 === 0) i++
+      if (!Array.isArray(accumulator[i])) accumulator[i] = []
+      accumulator[i].push(currentValue)
+      return accumulator
+    }, [])
+
+  each row in rows
+    .row.justify-content-between
+      each item in row
+        +image(item)

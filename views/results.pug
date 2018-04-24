@@ -2,8 +2,10 @@ doctype html
 html(lang='en')
   include includes/pageTop.pug
 
-  body
-    .container
+  body(class=searchType)
+    .container.position-relative
+      if searchType === 'images'
+        include includes/imageDetail.pug
       .row
         include includes/title.pug
 

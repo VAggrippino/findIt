@@ -1,13 +1,23 @@
 @import url('https://fonts.googleapis.com/css?family=Montserrat:800i');
 
+body,
+html {
+  scroll-behavior: smooth;
+}
+
 .title {
   font-weight: 800;
   font-style: italic;
   font-family: 'Montserrat', sans-serif;
 }
 
+body {
+  overflow-y: scroll;
+}
+
 body.index .title {
   font-size: 4rem;
+  overflow-y: auto;
 }
 
 .title span:nth-child(1) { color: red; }
@@ -34,16 +44,31 @@ body.index .title {
   text-decoration: none;
 }
 
-.image a {
+.image.result {
+  height: 8rem;
+  overflow: hidden;
+}
+
+.image.result a {
   --caption-height: 2em;
 
   display: inline-block;
-  height: 8rem;
   position: relative;
+  width: 100%;
+  height: 100%;
 }
 
-.image a::before,
-.image a::after {
+.image.result a img {
+  width: 100%;
+  height: auto;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+.image.result a::before,
+.image.result a::after {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -58,28 +83,75 @@ body.index .title {
   transition: max-height 0.25s;
   box-sizing: border-box;
   padding: 0 0.25em;
-  background: linear-gradient(to top, black, transparent);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent);
+  z-index: 100;
 }
 
-.image a::before {
+.image.result a::before {
   content: attr(data-size);
   left: 0;
   width: 5em;
 }
 
-.image a::after {
+.image.result a::after {
   content: attr(data-domain);
   text-align: right;
   width: calc(100% - 5em);
   left: 5em;
 }
 
-.image a:hover::before,
-.image a:hover::after {
+.image.result a:hover::before,
+.image.result a:hover::after {
   max-height: var(--caption-height);
 }
 
-.image img {
-  max-height: 100%;
-  width: auto;
+#imageDetail {
+  position: relative;
+  margin: 0.5rem 0;
+  max-height: 15rem;
+  transition: max-height 0.5s;
+}
+
+#imageDetail.hidden {
+  margin: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s;
+}
+
+#imageDetail .pointer {
+  display: block;
+  position: absolute;
+  top: -0.5rem;
+  left: 2rem;
+  transform: translateX(-100%);
+}
+
+#imageDetail .pointer .arrow {
+  display: block;
+  background-color: var(--dark);
+  width: 1rem;
+  height: 1rem;
+  transform: rotate(45deg);
+}
+
+#imageDetail .image {
+  margin: 1rem 0;
+  height: calc(100% - 2rem);
+}
+
+#imageDetail .image a {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#imageDetail .image a img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+#imageDetail .details {
+  margin: 1rem 0;
 }
