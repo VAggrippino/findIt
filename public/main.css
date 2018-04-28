@@ -15,9 +15,12 @@ body {
   overflow-y: scroll;
 }
 
+body.index {
+  overflow-y: auto;
+}
+
 body.index .title {
   font-size: 4rem;
-  overflow-y: auto;
 }
 
 .title span:nth-child(1) { color: red; }
