@@ -14,10 +14,18 @@ window.addEventListener('load', () => {
       imageDetail.data = e.currentTarget.dataset
       imageDetail.target = e.target
 
+      let image = e.target.parentNode
+      while (!image.classList.contains('image')) image = image.parentNode
+      if (image.classList.contains('active')) return
+
+      imageResults.forEach(i => i.classList.remove('active'))
+      image.classList.add('active')
+
       toggleDetail(imageDetail, 'hide')
         .then(imageDetail => addDetails(imageDetail))
         .then(imageDetail => positionDetail(imageDetail))
         .then(imageDetail => toggleDetail(imageDetail, 'show'))
+        .then(imageDetail => positionWindow(imageDetail))
     })
   }
 })
@@ -105,14 +113,38 @@ function positionDetail (imageDetail) {
     let image = target.parentNode
     while (!image.classList.contains('image')) image = image.parentNode
 
+    const imageMiddle = image.offsetLeft + image.offsetWidth / 2
+    const pointer = imageDetail.getElementsByClassName('pointer')[0]
+    const pointerPosition = imageMiddle - pointer.offsetWidth / 2
+    pointer.style.left = pointerPosition + 'px'
+
     // Identify the row that contains the image
     let row = image.parentNode
     while (!row.classList.contains('row')) row = row.parentNode
 
     row.insertAdjacentElement('afterend', imageDetail)
 
-    // The next transition doesn't occur unless we wait a little while first
-    setTimeout(resolve.bind(null, imageDetail), 100)
-    // resolve(imageDetail)
+    // Trigger a reflow before resolving the promise
+    // https://stackoverflow.com/a/50000450/2948042
+    // https://gist.github.com/paulirish/5d52fb081b3570c81e3a
+    row.offsetWidth // eslint-disable-line no-unused-expressions
+    resolve(imageDetail)
   })
+}
+
+function positionWindow (imageDetail) {
+  let activeRow = imageDetail.previousSibling
+  let windowBottom = window.scrollY + window.innerHeight
+  let detailBottom = imageDetail.offsetTop + imageDetail.offsetHeight
+
+  // If the image detail isn't fully visible, scroll just enough so that it is
+  if (windowBottom < detailBottom + 10) {
+    let goodPosition = imageDetail.offsetTop + window.innerHeight - imageDetail.offsetHeight + 10
+    window.scrollTo(0, goodPosition)
+  }
+
+  // If the active row isn't fully visible, scroll just enough so that it is
+  if (window.scrollY > activeRow.offsetTop - 10) {
+    window.scrollTo(0, activeRow.offsetTop - 10)
+  }
 }
