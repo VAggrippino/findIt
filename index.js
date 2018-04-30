@@ -99,7 +99,7 @@ function bingImageSearch (req) {
       'Ocp-Apim-Subscription-Key': process.env.BING_API_KEY
     },
     qs: {
-      q: encodeURIComponent(req.query.query),
+      q: req.query.query,
       count: 25
     }
   }
