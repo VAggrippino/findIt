@@ -1,130 +1,145 @@
-'use strict'
-require('dotenv').config()
-const express = require('express')
-const rp = require('request-promise-native')
+require('dotenv').config();
+const express = require('express');
+const rp = require('request-promise-native');
 
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 3000;
 
-const app = express()
-app.set('view engine', 'pug')
-app.use(express.static('public')) // For CSS & client-side JavaScript
+const app = express();
+app.set('view engine', 'pug');
+app.use(express.static('public')); // For CSS & client-side JavaScript
 
 app.get('/', (req, res) => {
-  res.render('index')
-})
+  res.render('index');
+});
 
-app.get('/search', newQuery)
+app.get('/search', newQuery);
 
 app.listen(port, () => {
-  console.log(`Listening on port ${port} ...`)
-})
+  console.log(`Listening on port ${port} ...`);
+});
 
-async function newQuery (req, res) {
-  let poweredBy
-  let results
+async function newQuery(req, res) {
+  let poweredBy;
+  let results;
   switch (req.query.searchType) {
     case 'web':
-      poweredBy = 'Google Custom Search'
-      results = await cseSearch(req)
-      break
+      poweredBy = 'Google Custom Search';
+      results = await cseSearch(req);
+      break;
     case 'images':
-      poweredBy = 'Bing Web Search API'
-      results = await bingImageSearch(req)
-      break
+      poweredBy = 'Bing Web Search API';
+      results = await bingImageSearch(req);
+      break;
     case 'books':
-      poweredBy = 'Amazon'
-      break
+      poweredBy = 'Amazon';
+      break;
     case 'Movies':
-      poweredBy = 'Open Movie Database'
-      break
+      poweredBy = 'Open Movie Database';
+      break;
     case 'Products':
-      poweredBy = 'Amazon'
-      break
+      poweredBy = 'Amazon';
+      break;
+    default:
+      break;
   }
 
-  let data = {
+  const data = {
     searchType: req.query.searchType,
-    poweredBy: poweredBy,
+    poweredBy,
     query: req.query.query,
     page: +req.query.page || 1,
-    results: results
-  }
-  res.render('results', data)
+    results,
+  };
+  res.render('results', data);
 }
 
-function cseSearch (req) {
-  let searchType = req.query.searchType
-  let cseId = process.env['CSE_ID_' + searchType.toUpperCase()]
-  let start = req.query.page ? (req.query.page * 10) - 10 : 1
-  if (start < 1) start = 1
+function cseSearch(req) {
+  const { searchType } = req.query;
+  const cseId = process.env[`CSE_ID_${searchType.toUpperCase()}`];
 
-  let options = {
+  const resultCount = 10;
+  let start = req.query.page ? (req.query.page * resultCount) - resultCount : 1;
+  if (start < 1) start = 1;
+
+  const options = {
     uri: 'https://www.googleapis.com/customsearch/v1/',
     qs: {
       q: encodeURIComponent(req.query.query),
       cx: cseId,
       key: process.env.CSE_API_KEY,
-      num: 10,
+      num: resultCount,
       safe: 'high',
-      start: start
+      start,
     },
-    json: true
-  }
+    json: true,
+  };
 
   return rp(options)
-    .then(results => {
-      let pages = Math.floor(results.searchInformation.totalResults / 10) + 1
-      let data = {
+    .then((results) => {
+      const pages = Math.floor(results.searchInformation.totalResults / resultCount) + 1;
+      const data = {
         searchType: req.query.searchType,
         searchTime: results.searchInformation.formattedSearchTime,
         resultCount: results.searchInformation.formattedTotalResults,
         items: results.items,
-        pages: pages
-      }
-      return data
+        pages,
+      };
+      return data;
     })
-    .catch(error => {
-      console.log(error)
-      return error
-    })
+    .catch((error) => {
+      console.error(error);
+      return error;
+    });
 }
 
-function bingImageSearch (req) {
-  let host = 'api.cognitive.microsoft.com'
-  let path = '/bing/v7.0/images/search'
+function bingImageSearch(req) {
+  const host = 'api.cognitive.microsoft.com';
+  const path = '/bing/v7.0/images/search';
+  const resultCount = 1;
 
-  let options = {
-    uri: 'https://' + host + path,
+  const options = {
+    resolveWithFullResponse: false,
+    uri: `https://${host}${path}`,
     headers: {
-      'Ocp-Apim-Subscription-Key': process.env.BING_API_KEY
+      'Ocp-Apim-Subscription-Key': process.env.BING_API_KEY,
     },
     qs: {
       q: req.query.query,
-      count: 25
-    }
-  }
+      count: resultCount,
+    },
+  };
 
   return rp(options)
-    .then(results => {
-      let obj = JSON.parse(results)
-      console.log(JSON.stringify(obj.value, null, 2))
-
-      let data = {
-        searchType: req.query.searchType,
-        resultCount: obj.value.length,
-        items: obj.value
+    .then((results) => {
+      let obj;
+      if (options.resolveWithFullResponse) {
+        obj = JSON.parse(results.body);
+      } else {
+        obj = JSON.parse(results);
       }
 
-      return data
-    })
-    .catch(error => {
-      console.log('-----')
-      console.log('Request Failed:')
 
-      Object.entries(JSON.parse(error.error)).map(part => {
-        console.log(part[0], part[1])
-      })
+      obj.forEach(p => console.log(p));
 
-      console.log('=====')
+      const data = {
+        searchType: req.query.searchType,
+        resultCount: obj.value.length,
+        items: obj.value,
+        pages: Math.floor(obj.totalEstimatedMatches / resultCount) + 1,
+      };
+
+      return data;
     })
+    .catch((error) => {
+
+
+      console.log('-----');
+      console.log('Request Failed:');
+
+      Object.entries(JSON.parse(error.error)).forEach((part) => {
+        console.log(part[0], part[1]);
+      });
+
+      console.log('=====');
+    });
 }
