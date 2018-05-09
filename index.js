@@ -118,9 +118,6 @@ function bingImageSearch(req) {
         obj = JSON.parse(results);
       }
 
-
-      obj.forEach(p => console.log(p));
-
       const data = {
         searchType: req.query.searchType,
         resultCount: obj.value.length,
@@ -131,15 +128,15 @@ function bingImageSearch(req) {
       return data;
     })
     .catch((error) => {
-
-
-      console.log('-----');
-      console.log('Request Failed:');
+      console.error('-----');
+      console.error('Request Failed:');
+      console.error(error);
+      console.error('+++++');
 
       Object.entries(JSON.parse(error.error)).forEach((part) => {
-        console.log(part[0], part[1]);
+        console.error(part[0], part[1]);
       });
 
-      console.log('=====');
+      console.error('=====');
     });
 }
